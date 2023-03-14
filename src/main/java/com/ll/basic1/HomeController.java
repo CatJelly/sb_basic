@@ -52,9 +52,22 @@ public class HomeController {
 
     @GetMapping("/home/addPerson")
     @ResponseBody
-    public String addPerson(@RequestParam String name, int age) {
+    public String addPerson(String name, int age) {
         list.add(new Person(++count, name, age));
         return String.format("%d번 사람이 추가되었습니다.", list.size());
+    }
+
+    @GetMapping("/home/removePerson")
+    @ResponseBody
+    public String removePerson(int id) {
+        Person delete;
+        for(Person p : list) {
+            if(p.getId() == id) {
+                list.remove(p);
+                return String.format("%d번 사람이 삭제되었습니다.", id);
+            }
+        }
+        return String.format("%d번 사람이 존재하지 않습니다.", id);
     }
 
     @GetMapping("/home/people")
