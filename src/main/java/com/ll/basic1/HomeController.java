@@ -3,6 +3,7 @@ package com.ll.basic1;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -60,14 +61,31 @@ public class HomeController {
     @GetMapping("/home/removePerson")
     @ResponseBody
     public String removePerson(int id) {
-        Person delete;
-        for(Person p : list) {
-            if(p.getId() == id) {
-                list.remove(p);
-                return String.format("%d번 사람이 삭제되었습니다.", id);
-            }
+        boolean remove = list.removeIf(people -> people.getId() == id);
+        if (remove)
+            return String.format("%d번 사람이 삭제되었습니다.", id);
+        else
+            return String.format("%d번 사람이 존재하지 않습니다.", id);
+    }
+
+    @GetMapping("/home/modifyPerson")
+    @ResponseBody
+    public String modifyPerson(int id, String name, int age) {
+        Person found = list
+                .stream()
+                .filter(p -> p.getId() == id)
+                .findFirst()
+                .orElse(null);
+
+        if(found != null) {
+            found.setId(id);
+            found.setName(name);
+            found.setAge(age);
+            return String.format("%d번 사람이 수정되었습니다.", id);
         }
-        return String.format("%d번 사람이 존재하지 않습니다.", id);
+        else {
+            return String.format("%d번 사람이 존재하지 않습니다.", id);
+        }
     }
 
     @GetMapping("/home/people")
@@ -79,6 +97,7 @@ public class HomeController {
 
 @AllArgsConstructor
 @Getter
+@Setter
 class Person {
     int id;
     String name;
